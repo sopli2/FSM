@@ -11,6 +11,8 @@ public class DayNightCycle : MonoBehaviour
     public float sec;
     public int min;
     public int day;
+    
+    int length = 60;
 
     public bool activateLights;
     public GameObject[] lights;
@@ -19,6 +21,11 @@ public class DayNightCycle : MonoBehaviour
     void Start()
     {
         ppv = gameObject.GetComponent<Volume>();
+        for (int i = 0; i < lights.Length; i++)
+        {
+            lights[i].SetActive(false); // shut them off
+        }
+        activateLights = false;
     }
 
     // Update is called once per frame
@@ -47,34 +54,35 @@ public class DayNightCycle : MonoBehaviour
 
     public void ControlPPV()
     {
-        if(sec <= 30)
+        if(sec <= (length / 2))
         {
-            ppv.weight = 1 - (float)sec / 30;
-            if (activateLights == true)
+            ppv.weight = (float)sec / (length/2); // day to night (0 to 1)
+            // 1 - (float)sec / (length / 2);
+            if (activateLights == false)
             {
-                if(sec > 20)
+                if(sec > (length / 6))
                 {
                     for (int i = 0; i < lights.Length; i++)
                     {
-                        lights[i].SetActive(false); // shut them off
+                        lights[i].SetActive(true); // shut them off
                     }
-                    activateLights = false;
+                    activateLights = true;
                 }
             }
         }
-        else if(sec <= 60)
+        else if(sec <= length)
         {
-            ppv.weight = (float)sec / 30 - 1;
-
-            if(activateLights == false)
+            ppv.weight = (float)(length - sec) / (length/2); // night to day (1 to 0)
+            // (float)sec / (length / 2) - 1;
+            if(activateLights == true)
             {
-                if(sec > 50)
+                if(sec > (length - length/6))
                 {
                     for (int i = 0; i < lights.Length; i++)
                     {
-                        lights[i].SetActive(true); 
+                        lights[i].SetActive(false); 
                     }
-                    activateLights = true;
+                    activateLights = false;
                 }
             }
         }
